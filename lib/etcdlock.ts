@@ -10,7 +10,7 @@ const LOCK_ATTEMPS = 10;
 export class Lock {
   etcdClient: Etcd;
   key: string;
-  ttl: number = 60;
+  ttl: number;
   lease?: string;
   uuid?: string;
   version = 0;
