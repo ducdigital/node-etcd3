@@ -71,10 +71,15 @@ export class Lock {
           key: new Buffer(this.key),
         }),
       ];
-
-      response = yield this.etcdClient
-        .createTransaction(compare, createLock, getLock);
-      success = response.succeeded;
+      try {
+        response = yield this.etcdClient
+          .createTransaction(compare, createLock, getLock);
+        success = response.succeeded;
+      } catch (ex) {
+        console.log('Failed to lock. Here is the error.');
+        console.log(ex);
+        console.log(compare);
+      }
 
       if (!success) {
         yield this.wait(waitTime);
