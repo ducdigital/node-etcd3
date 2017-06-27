@@ -44,11 +44,7 @@ export class Lock {
 
     while (!success && attemps > 0) {
       attemps -= 1;
-      if (!this.lease && !this.ttl) {
-        this.lease = yield this.etcdClient.getClientLease();
-      } else if (!!this.ttl && !this.lease) {
-        this.lease = yield this.etcdClient.leaseGrant(this.ttl);
-      }
+      this.lease = yield this.etcdClient.getClientLease();
 
       let compare = [
         new CompareVersion(
@@ -76,6 +72,7 @@ export class Lock {
           .createTransaction(compare, createLock, getLock);
         success = response.succeeded;
       } catch (ex) {
+        this.lease = yield this.etcdClient.getClientLease();
         console.log('Failed to lock. Here is the error.');
         console.log(ex);
         console.log(compare);
